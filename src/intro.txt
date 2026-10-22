@@ -1,0 +1,10 @@
+Hello! Welcome to Terminaldle. A Wordle right in your terminal!
+To play, enter a five letter word and hit enter.
+You get 6 guesses to figure out what the answer is.
+
+White letters = not in word
+Yellow letters = in word, but in wrong spot
+Green letters = in word and in correct spot
+
+Have fun!
+

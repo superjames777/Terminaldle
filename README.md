@@ -1,7 +1,7 @@
 <h1>Terminaldle</h1>
 
 Terminaldle is Wordle right in your terminal!
-Play every single wordle-legal word unlimited.
+Play every single wordle-legal word unlimited*.
 
 To play, enter a five letter word and hit enter.
 You get 6 guesses to figure out what the answer is.
@@ -13,3 +13,6 @@ You get 6 guesses to figure out what the answer is.
 </ul>
 
 Have fun!
+
+
+*THIS IS VERY EARLY IN DEVELOPMENT. MORE WORDS WILL COME VERY SOON!!!!!!!

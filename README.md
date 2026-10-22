@@ -1,4 +1,4 @@
-#Terminaldle
+<h1>Terminaldle</h1>
 
 Terminaldle is Wordle right in your terminal!
 Play every single wordle-legal word unlimited.

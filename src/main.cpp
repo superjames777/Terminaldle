@@ -8,6 +8,9 @@
 #include <array>
 #include <chrono>
 #include <thread>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #define KEYWORDMODE "-kwm"
 
@@ -19,6 +22,12 @@ static std::size_t randnum(const std::size_t max);
 std::vector<std::string> getlist(std::ifstream &wordlist);
 
 int main(int argc, char *argv[]) {
+    #ifdef _WIN32
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD mode;
+    GetConsoleMode(hOut, &mode);
+    SetConsoleMode(hOut, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+    #endif
     std::ifstream intro("intro.txt");
     if (!intro.is_open()) {
         std::cerr << "Failed to open intro.txt. Please check that intro.txt exists and wasn't moved." << std::endl;
@@ -111,7 +120,12 @@ std::vector<std::string> getlist(std::ifstream &wordlist) {
     std::vector<std::string> list;
     std::string line;
     while (std::getline(wordlist, line)) {
-        list.push_back(line);
+        if (!line.empty() && line.back() == '\r') {
+            line.pop_back();
+        }
+        if (!line.empty()) {
+            list.push_back(line);
+        }
     }
     return list;
 }

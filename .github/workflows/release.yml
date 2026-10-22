@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows-x64
+            cmake_args: ""
+          - os: ubuntu-latest
+            platform: linux-x64
+            cmake_args: ""
+          - os: macos-latest
+            platform: macos-universal
+            cmake_args: '-DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"'
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Configure
+        shell: bash
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release ${{ matrix.cmake_args }}
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Install release files
+        run: cmake --install build --config Release --prefix package
+
+      - name: Create Windows archive
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path package\* -DestinationPath Terminaldle-${{ matrix.platform }}.zip
+
+      - name: Create Unix archive
+        if: runner.os != 'Windows'
+        shell: bash
+        run: tar -czf "Terminaldle-${{ matrix.platform }}.tar.gz" -C package .
+
+      - name: Upload release archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: Terminaldle-${{ matrix.platform }}
+          path: Terminaldle-${{ matrix.platform }}.*
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download release archives
+        uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+
+      - name: Create release and attach archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: gh release create "$TAG_NAME" release/* --verify-tag --generate-notes

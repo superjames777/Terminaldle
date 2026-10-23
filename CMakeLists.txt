@@ -23,7 +23,7 @@ if(MSVC)
     )
 endif()
 
-foreach(data_file intro.txt wordlist.txt answerlist.txt keywordlist.txt stats.json)
+foreach(data_file intro.txt wordlist.txt answerlist.txt keywordlist.txt stats.json openers.json modeuse.json)
     add_custom_command(
         TARGET terminaldle
         POST_BUILD
@@ -43,5 +43,7 @@ install(
         src/answerlist.txt
         src/keywordlist.txt
         src/stats.json
+        src/openers.json
+        src/modeuse.json
     DESTINATION .
 )

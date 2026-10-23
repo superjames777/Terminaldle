@@ -5,7 +5,7 @@ In standard mode, answers are selected from `answerlist.txt`, while guesses are 
 
 ## Download and run
 
-Download the archive for your operating system from the [GitHub Releases](https://github.com/superjames777/Terminaldle/releases) page, extract it, and run the `terminaldle` program from the extracted folder. On Windows, run `terminaldle.exe` from PowerShell or Command Prompt. On macOS or Linux, run `./terminaldle` from a terminal. Add `-kwm` to use keyword mode.
+Download the archive for your operating system from the [GitHub Releases](https://github.com/superjames777/Terminaldle/releases) page, extract it, and run the `terminaldle` program from the extracted folder. On Windows, run `terminaldle.exe` from PowerShell or Command Prompt. On macOS or Linux, run `./terminaldle` from a terminal. Add `-kwm` to use keyword mode, or add `-stats` to see your game stats.
 
 ## Build from source
 
@@ -21,7 +21,7 @@ git push origin v1.0.0
 ## If on macOS
 
 If you are on macOS, when attempting to run the file normally, you may get a warning that apple cannot check the file for malware. To bypass this warning
-simply run this command in the terminal
+simply run this command in the terminal:
 ```sh
 xattr -d com.apple.quarantine terminaldle
 ./terminaldle

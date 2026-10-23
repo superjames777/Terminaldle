@@ -33,10 +33,27 @@ int main(int argc, char *argv[]) {
     SetConsoleMode(hOut, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
     #endif
     std::ifstream statsfile("stats.json");
+    if (!statsfile.is_open()) {
+        std::cerr << "Failed to open stats.json. Please check that stats.json exists and wasn't moved." << std::endl;
+        return 1;
+    }
     json stats = json::parse(statsfile);
+    std::ifstream openersfile("openers.json");
+    if (!openersfile.is_open()) {
+        std::cerr << "Failed to open openers.json. Please check that openers.json exists and wasn't moved." << std::endl;
+        return 1;
+    }
+    json openers = json::parse(openersfile);
+    std::ifstream modeusefile("modeuse.json");
+    if (!modeusefile.is_open()) {
+        std::cerr << "Failed to open modeuse.json. Please check that modeuse.json exists and wasn't moved." << std::endl;
+        return 1;
+    }
+    json modeuse = json::parse(modeusefile);
     std::string answerFilename;
     std::string guessFilename;
     if (argc > 1 && std::string(argv[1]) == KEYWORDMODE) {
+        modeuse["keyword"] = int(modeuse["keyword"]) + 1;
         answerFilename = "keywordlist.txt";
         guessFilename = "keywordlist.txt";
     } else if (argc > 1 && std::string(argv[1]) == STATS) {
@@ -47,24 +64,25 @@ int main(int argc, char *argv[]) {
         std::cout << "Favorite Mode: " << stats["favmode"].get<std::string>() << std::endl;
         return 0;
     } else {
+        modeuse["standard"] = int(modeuse["standard"]) + 1;
         answerFilename = "answerlist.txt";
         guessFilename = "wordlist.txt";
     }
     std::ifstream intro("intro.txt");
     if (!intro.is_open()) {
         std::cerr << "Failed to open intro.txt. Please check that intro.txt exists and wasn't moved." << std::endl;
-        return 1;
+    } else {
+        std::string introduction((std::istreambuf_iterator<char>(intro)), std::istreambuf_iterator<char>());
+        std::cout << introduction;
     }
-    std::string introduction((std::istreambuf_iterator<char>(intro)), std::istreambuf_iterator<char>());
-    std::cout << introduction;
     std::ifstream answerFile(answerFilename);
     if (!answerFile.is_open()) {
-        std::cerr << "Failed to open answer list: " << answerFilename << ". Please check that the file exists and has not been moved." << std::endl;
+        std::cerr << "Failed to open " << answerFilename << ". Please check that " << answerFilename << " exists and wasn't moved." << std::endl;
         return 1;
     }
     std::ifstream guessFile(guessFilename);
     if (!guessFile.is_open()) {
-        std::cerr << "Failed to open guess list: " << guessFilename << ". Please check that the file exists and has not been moved." << std::endl;
+        std::cerr << "Failed to open " << guessFilename << ". Please check that " << guessFilename << " exists and wasn't moved." << std::endl;
         return 1;
     }
     std::vector<std::string> answerlist = getlist(answerFile);
@@ -97,6 +115,9 @@ int main(int argc, char *argv[]) {
                 std::cout << "Not a valid word.\n";
                 continue;
             } else {
+                if (openers.contains(guess) && guessnum == 1) {
+                    openers[guess] = int(openers[guess]) + 1;
+                }
                 if (guess == word) {
                     for (std::size_t i = 0; i < word.length(); i++) {
                         std::cout << GREEN << guess[i] << RESET;
@@ -170,8 +191,31 @@ int main(int argc, char *argv[]) {
             }  
         }
     }
-    std::ofstream out("stats.json");
-    out << std::setw(4) << stats << std::endl;
+    auto favopen = std::max_element(openers.begin(), openers.end(), [](const json &a, const json &b) {return a.get<int>() < b.get<int>();});
+    std::string opener = favopen.key();
+    stats["favopener"] = opener;
+    auto standard = modeuse.begin();
+    auto keyword = std::next(standard);
+    std::string favmode = (standard->get<int>() > keyword->get<int>()) ? standard.key() : keyword.key();
+    stats["favmode"] = favmode;
+    std::ofstream saveopeners("openers.json");
+    if (!saveopeners.is_open()) {
+        std::cerr << "Failed to save openers.json." << std::endl;
+        return 1;
+    }
+    saveopeners << std::setw(4) << openers << std::endl;
+    std::ofstream savemodeuse("modeuse.json");
+    if (!savemodeuse.is_open()) {
+        std::cerr << "Failed to save modeuse.json." << std::endl;
+        return 1;
+    }
+    savemodeuse << std::setw(4) << modeuse << std::endl;
+    std::ofstream savestats("stats.json");
+    if (!savestats.is_open()) {
+        std::cerr << "Failed to save stats.json." << std::endl;
+        return 1;
+    }
+    savestats << std::setw(4) << stats << std::endl;
     return 0;
 }
 

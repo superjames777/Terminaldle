@@ -1,11 +1,11 @@
 <h1>Terminaldle</h1>
 
 Terminaldle is Wordle right in your terminal!
-Play every single wordle-legal word unlimited*.
+Play every single wordle-legal word unlimited.
 
 ## Download and run
 
-Download the archive for your operating system from the [GitHub Releases](https://github.com/superjames777/Terminaldle/releases) page, extract it, and run the `terminaldle` program from the extracted folder. On Windows, run `terminaldle.exe` from PowerShell or Command Prompt. On macOS or Linux, run `./terminaldle` from a terminal. Add `-kwm` to use keyword mode.
+Download the archive for your operating system from the [GitHub Releases](https://github.com/superjames777/Terminaldle/releases) page, extract it, and run the `terminaldle` program from the extracted folder. On Windows, run `terminaldle.exe` from PowerShell or Command Prompt. On macOS or Linux, run `./terminaldle` from a terminal. Add `-kwm` to use keyword mode*.
 
 ## Build from source
 
@@ -17,6 +17,17 @@ The GitHub Actions workflow builds Windows, Linux, and universal macOS archives 
 git tag v1.0.0
 git push origin v1.0.0
 ```
+
+## If on macOS
+
+If you are on macOS, when attempting to run the file normally, you may get a warning that apple cannot check the file for malware. To bypass this warning
+simply run this command in the terminal
+```sh
+xattr -d com.apple.quarantine terminaldle
+./terminaldle
+```
+
+## How to play
 
 To play, enter a five letter word and hit enter.
 You get 6 guesses to figure out what the answer is.
@@ -30,4 +41,4 @@ You get 6 guesses to figure out what the answer is.
 Have fun!
 
 
-*THIS IS VERY EARLY IN DEVELOPMENT. MORE WORDS WILL COME VERY SOON!!!!!!!
+*<i>Keyword mode not added yet.</i>

@@ -34,9 +34,11 @@ int main(int argc, char *argv[]) {
     #endif
     std::ifstream statsfile("stats.json");
     json stats = json::parse(statsfile);
-    std::string filename;
+    std::string answerFilename;
+    std::string guessFilename;
     if (argc > 1 && std::string(argv[1]) == KEYWORDMODE) {
-        filename = "keywordlist.txt";
+        answerFilename = "keywordlist.txt";
+        guessFilename = "keywordlist.txt";
     } else if (argc > 1 && std::string(argv[1]) == STATS) {
         std::cout << "Winrate: " << stats["winrate"].get<int>() << "%" << std::endl;
         std::cout << "Games: " << stats["games"].get<int>() << std::endl;
@@ -45,7 +47,8 @@ int main(int argc, char *argv[]) {
         std::cout << "Favorite Mode: " << stats["favmode"].get<std::string>() << std::endl;
         return 0;
     } else {
-        filename = "wordlist.txt";
+        answerFilename = "answerlist.txt";
+        guessFilename = "wordlist.txt";
     }
     std::ifstream intro("intro.txt");
     if (!intro.is_open()) {
@@ -54,22 +57,28 @@ int main(int argc, char *argv[]) {
     }
     std::string introduction((std::istreambuf_iterator<char>(intro)), std::istreambuf_iterator<char>());
     std::cout << introduction;
-    std::ifstream wlist(filename);
-    if (!wlist.is_open()) {
-        std::cerr << "Failed to open word list. Please check that wordlist.txt & keywordlist.txt still exist and have not been moved." << std::endl;
+    std::ifstream answerFile(answerFilename);
+    if (!answerFile.is_open()) {
+        std::cerr << "Failed to open answer list: " << answerFilename << ". Please check that the file exists and has not been moved." << std::endl;
         return 1;
     }
-    std::vector<std::string> wordlist = getlist(wlist);
-    if (wordlist.empty()) {
-        std::cerr << "Word list is empty. Please check that the word list you are attempting to use contains the required words." << std::endl;
+    std::ifstream guessFile(guessFilename);
+    if (!guessFile.is_open()) {
+        std::cerr << "Failed to open guess list: " << guessFilename << ". Please check that the file exists and has not been moved." << std::endl;
+        return 1;
+    }
+    std::vector<std::string> answerlist = getlist(answerFile);
+    std::vector<std::string> wordlist = getlist(guessFile);
+    if (answerlist.empty() || wordlist.empty()) {
+        std::cerr << "Answer list or guess list is empty. Please check that the selected lists contain the required words." << std::endl;
         return 1;
     }
     bool playing = true;
     std::string previousWord;
     while (playing) {
-        std::string word = wordlist[randnum(wordlist.size())];
-        while (wordlist.size() > 1 && word == previousWord) {
-            word = wordlist[randnum(wordlist.size())];
+        std::string word = answerlist[randnum(answerlist.size())];
+        while (answerlist.size() > 1 && word == previousWord) {
+            word = answerlist[randnum(answerlist.size())];
         }
         previousWord = word;
         int guessnum = 1;

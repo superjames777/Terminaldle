@@ -1,7 +1,7 @@
 <h1>Terminaldle</h1>
 
 Terminaldle is Wordle right in your terminal!
-Play every single wordle-legal word unlimited.
+In standard mode, answers are selected from `answerlist.txt`, while guesses are validated against `wordlist.txt`. Keyword mode uses `keywordlist.txt` for both.
 
 ## Download and run
 

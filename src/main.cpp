@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
     std::string word = wordlist[randnum(wordlist.size())];
     int guessnum = 1;
     bool guessed = false;
-    while (guessnum < 6) {
+    while (guessnum < 7) {
         std::cout << "\nGuess: " << guessnum << std::endl;
         std::string guess;
         std::cin >> guess;

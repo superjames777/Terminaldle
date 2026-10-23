@@ -52,10 +52,10 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     std::string word = wordlist[randnum(wordlist.size())];
-    int guesses = 0;
+    int guessnum = 1;
     bool guessed = false;
-    while (guesses < 6) {
-        std::cout << "\nGuesses: " << guesses << std::endl;
+    while (guessnum < 6) {
+        std::cout << "\nGuess: " << guessnum << std::endl;
         std::string guess;
         std::cin >> guess;
         for (char &c : guess) {
@@ -69,7 +69,14 @@ int main(int argc, char *argv[]) {
             continue;
         } else {
             if (guess == word) {
-                std::cout << "\nCorrect!\nThe word was: " << word << "\nGuesses taken: " << guesses << std::endl;
+                for (std::size_t i = 0; i < word.length(); i++) {
+                    std::cout << GREEN << guess[i] << RESET;
+                    std::cout << std::flush;
+                    if (i + 1 < word.length()) {
+                        std::this_thread::sleep_for(std::chrono::seconds(1));
+                    }
+                }
+                std::cout << "\nCorrect!\nThe word was: " << word << "\nGuesses taken: " << guessnum << std::endl;
                 guessed = true;
                 break;
             }
@@ -101,7 +108,7 @@ int main(int argc, char *argv[]) {
             }
             std::cout << '\n';
         }
-        guesses++;
+        guessnum++;
     } 
     if (!guessed) {
         std::cout << "\nThe answer was: " << word << std::endl;

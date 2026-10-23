@@ -51,9 +51,14 @@ int main(int argc, char *argv[]) {
         std::cerr << "Word list is empty. Please check that the word list you are attempting to use contains the required words." << std::endl;
         return 1;
     }
-    std::string word = wordlist[randnum(wordlist.size())];
     bool playing = true;
+    std::string previousWord;
     while (playing) {
+        std::string word = wordlist[randnum(wordlist.size())];
+        while (wordlist.size() > 1 && word == previousWord) {
+            word = wordlist[randnum(wordlist.size())];
+        }
+        previousWord = word;
         int guessnum = 1;
         bool guessed = false;
         while (guessnum < 7) {
@@ -129,9 +134,9 @@ int main(int argc, char *argv[]) {
                 std::string redoresult;
                 std::cout << "\nInvalid input please enter y or n: ";
                 std::cin >> redoresult;
-                if (result == "y" || result == "Y") {
+                if (redoresult == "y" || redoresult == "Y") {
                     answered = true;
-                } else if (result == "n" || result == "N") {
+                } else if (redoresult == "n" || redoresult == "N") {
                     answered = true;
                     playing = false;
                     break;
@@ -143,8 +148,7 @@ int main(int argc, char *argv[]) {
 }
 
 static std::size_t randnum(const std::size_t max) {
-    std::random_device randev;
-    std::mt19937 gen(randev());
+    static std::mt19937 gen(std::random_device{}());
     std::uniform_int_distribution<std::size_t> distrib(0, max - 1);
     return distrib(gen);
 }

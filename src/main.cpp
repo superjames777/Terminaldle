@@ -52,66 +52,92 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     std::string word = wordlist[randnum(wordlist.size())];
-    int guessnum = 1;
-    bool guessed = false;
-    while (guessnum < 7) {
-        std::cout << "\nGuess: " << guessnum << std::endl;
-        std::string guess;
-        std::cin >> guess;
-        for (char &c : guess) {
-            c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
-        }
-        if (guess.length() != 5) {
-            std::cout << "Guess must be 5 letters.\n";
-            continue;
-        } else if (std::find(wordlist.begin(), wordlist.end(), guess) == wordlist.end()) {
-            std::cout << "Not a valid word.\n";
-            continue;
-        } else {
-            if (guess == word) {
+    bool playing = true;
+    while (playing) {
+        int guessnum = 1;
+        bool guessed = false;
+        while (guessnum < 7) {
+            std::cout << "\nGuess: " << guessnum << std::endl;
+            std::string guess;
+            std::cin >> guess;
+            for (char &c : guess) {
+                c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
+            }
+            if (guess.length() != 5) {
+                std::cout << "Guess must be 5 letters.\n";
+                continue;
+            } else if (std::find(wordlist.begin(), wordlist.end(), guess) == wordlist.end()) {
+                std::cout << "Not a valid word.\n";
+                continue;
+            } else {
+                if (guess == word) {
+                    for (std::size_t i = 0; i < word.length(); i++) {
+                        std::cout << GREEN << guess[i] << RESET;
+                        std::cout << std::flush;
+                        if (i + 1 < word.length()) {
+                            std::this_thread::sleep_for(std::chrono::seconds(1));
+                        }
+                    }
+                    std::cout << "\nCorrect!\nThe word was: " << word << "\nGuesses taken: " << guessnum << std::endl;
+                    guessed = true;
+                    break;
+                }
+                std::vector<bool> green(word.length(), false);
+                std::array<std::size_t, 256> remaining{};
                 for (std::size_t i = 0; i < word.length(); i++) {
-                    std::cout << GREEN << guess[i] << RESET;
+                    if (guess[i] == word[i]) {
+                        green[i] = true;
+                    } else {
+                        remaining[static_cast<unsigned char>(word[i])]++;
+                    }
+                }
+                for (std::size_t i = 0; i < word.length(); i++) {
+                    if (green[i]) {
+                        std::cout << GREEN << guess[i] << RESET;
+                    } else {
+                        std::size_t &count = remaining[static_cast<unsigned char>(guess[i])];
+                        if (count > 0) {
+                            std::cout << YELLOW << guess[i] << RESET;
+                            count--;
+                        } else {
+                            std::cout << guess[i];
+                        }
+                    }
                     std::cout << std::flush;
                     if (i + 1 < word.length()) {
                         std::this_thread::sleep_for(std::chrono::seconds(1));
                     }
                 }
-                std::cout << "\nCorrect!\nThe word was: " << word << "\nGuesses taken: " << guessnum << std::endl;
-                guessed = true;
-                break;
+                std::cout << '\n';
             }
-            std::vector<bool> green(word.length(), false);
-            std::array<std::size_t, 256> remaining{};
-            for (std::size_t i = 0; i < word.length(); i++) {
-                if (guess[i] == word[i]) {
-                    green[i] = true;
-                } else {
-                    remaining[static_cast<unsigned char>(word[i])]++;
-                }
-            }
-            for (std::size_t i = 0; i < word.length(); i++) {
-                if (green[i]) {
-                    std::cout << GREEN << guess[i] << RESET;
-                } else {
-                    std::size_t &count = remaining[static_cast<unsigned char>(guess[i])];
-                    if (count > 0) {
-                        std::cout << YELLOW << guess[i] << RESET;
-                        count--;
-                    } else {
-                        std::cout << guess[i];
-                    }
-                }
-                std::cout << std::flush;
-                if (i + 1 < word.length()) {
-                    std::this_thread::sleep_for(std::chrono::seconds(1));
-                }
-            }
-            std::cout << '\n';
+            guessnum++;
+        } 
+        if (!guessed) {
+            std::cout << "\nThe answer was: " << word << std::endl;
         }
-        guessnum++;
-    } 
-    if (!guessed) {
-        std::cout << "\nThe answer was: " << word << std::endl;
+        std::string result;
+        std::cout << "Would you like play another round? (y/n): ";
+        std::cin >> result;
+        if (result == "y" || result == "Y") {
+            continue;
+        } else if (result == "n" || result == "N") {
+            playing = false;
+            break;
+        } else {
+            bool answered = false;
+            while (!answered) {
+                std::string redoresult;
+                std::cout << "\nInvalid input please enter y or n: ";
+                std::cin >> redoresult;
+                if (result == "y" || result == "Y") {
+                    answered = true;
+                } else if (result == "n" || result == "N") {
+                    answered = true;
+                    playing = false;
+                    break;
+                }
+            }  
+        }
     }
     return 0;
 }

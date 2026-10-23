@@ -5,7 +5,7 @@ Play every single wordle-legal word unlimited.
 
 ## Download and run
 
-Download the archive for your operating system from the [GitHub Releases](https://github.com/superjames777/Terminaldle/releases) page, extract it, and run the `terminaldle` program from the extracted folder. On Windows, run `terminaldle.exe` from PowerShell or Command Prompt. On macOS or Linux, run `./terminaldle` from a terminal. Add `-kwm` to use keyword mode*.
+Download the archive for your operating system from the [GitHub Releases](https://github.com/superjames777/Terminaldle/releases) page, extract it, and run the `terminaldle` program from the extracted folder. On Windows, run `terminaldle.exe` from PowerShell or Command Prompt. On macOS or Linux, run `./terminaldle` from a terminal. Add `-kwm` to use keyword mode.
 
 ## Build from source
 
@@ -39,6 +39,3 @@ You get 6 guesses to figure out what the answer is.
 </ul>
 
 Have fun!
-
-
-*<i>Keyword mode not added yet.</i>

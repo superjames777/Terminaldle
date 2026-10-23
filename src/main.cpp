@@ -8,15 +8,19 @@
 #include <array>
 #include <chrono>
 #include <thread>
+#include <nlohmann/json.hpp>
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
 #define KEYWORDMODE "-kwm"
+#define STATS "-stats"
 
 #define RESET "\033[0m"
 #define GREEN "\033[32m"
 #define YELLOW "\033[33m"
+
+using json = nlohmann::json;
 
 static std::size_t randnum(const std::size_t max);
 std::vector<std::string> getlist(std::ifstream &wordlist);
@@ -28,6 +32,21 @@ int main(int argc, char *argv[]) {
     GetConsoleMode(hOut, &mode);
     SetConsoleMode(hOut, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
     #endif
+    std::ifstream statsfile("stats.json");
+    json stats = json::parse(statsfile);
+    std::string filename;
+    if (argc > 1 && std::string(argv[1]) == KEYWORDMODE) {
+        filename = "keywordlist.txt";
+    } else if (argc > 1 && std::string(argv[1]) == STATS) {
+        std::cout << "Winrate: " << stats["winrate"].get<int>() << "%" << std::endl;
+        std::cout << "Games: " << stats["games"].get<int>() << std::endl;
+        std::cout << "Wins: " << stats["wins"].get<int>() << std::endl;
+        std::cout << "Favorite Opener: " << stats["favopener"].get<std::string>() << std::endl;
+        std::cout << "Favorite Mode: " << stats["favmode"].get<std::string>() << std::endl;
+        return 0;
+    } else {
+        filename = "wordlist.txt";
+    }
     std::ifstream intro("intro.txt");
     if (!intro.is_open()) {
         std::cerr << "Failed to open intro.txt. Please check that intro.txt exists and wasn't moved." << std::endl;
@@ -35,12 +54,6 @@ int main(int argc, char *argv[]) {
     }
     std::string introduction((std::istreambuf_iterator<char>(intro)), std::istreambuf_iterator<char>());
     std::cout << introduction;
-    std::string filename;
-    if (argc > 1 && std::string(argv[1]) == KEYWORDMODE) {
-        filename = "keywordlist.txt";
-    } else {
-        filename = "wordlist.txt";
-    }
     std::ifstream wlist(filename);
     if (!wlist.is_open()) {
         std::cerr << "Failed to open word list. Please check that wordlist.txt & keywordlist.txt still exist and have not been moved." << std::endl;
@@ -116,10 +129,14 @@ int main(int argc, char *argv[]) {
                 std::cout << '\n';
             }
             guessnum++;
-        } 
+        }
+        stats["games"] = int(stats["games"]) + 1;
         if (!guessed) {
             std::cout << "\nThe answer was: " << word << std::endl;
+        } else {
+            stats["wins"] = int(stats["wins"]) + 1;
         }
+        stats["winrate"] = double(double(stats["wins"]) / double(stats["games"])) * 100;
         std::string result;
         std::cout << "Would you like play another round? (y/n): ";
         std::cin >> result;
@@ -144,6 +161,8 @@ int main(int argc, char *argv[]) {
             }  
         }
     }
+    std::ofstream out("stats.json");
+    out << std::setw(4) << stats << std::endl;
     return 0;
 }
 

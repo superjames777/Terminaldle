@@ -2,8 +2,19 @@ cmake_minimum_required(VERSION 3.15)
 
 project(Terminaldle LANGUAGES CXX)
 
+include(FetchContent)
+
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.12.0
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(nlohmann_json)
+
 add_executable(terminaldle src/main.cpp)
 target_compile_features(terminaldle PRIVATE cxx_std_11)
+target_link_libraries(terminaldle PRIVATE nlohmann_json::nlohmann_json)
 
 if(MSVC)
     set_property(

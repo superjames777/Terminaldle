@@ -44,18 +44,18 @@ jobs:
       - name: Create Windows archive
         if: runner.os == 'Windows'
         shell: pwsh
-        run: Compress-Archive -Path package\* -DestinationPath Terminaldle-${{ matrix.platform }}.zip
+        run: Compress-Archive -Path package\* -DestinationPath Terminaldle-${{ github.ref_name }}-${{ matrix.platform }}.zip
 
       - name: Create Unix archive
         if: runner.os != 'Windows'
         shell: bash
-        run: tar -czf "Terminaldle-${{ matrix.platform }}.tar.gz" -C package .
+        run: tar -czf "Terminaldle-${{ github.ref_name }}-${{ matrix.platform }}.tar.gz" -C package .
 
       - name: Upload release archive
         uses: actions/upload-artifact@v4
         with:
-          name: Terminaldle-${{ matrix.platform }}
-          path: Terminaldle-${{ matrix.platform }}.*
+          name: Terminaldle-${{ github.ref_name }}-${{ matrix.platform }}
+          path: Terminaldle-${{ github.ref_name }}-${{ matrix.platform }}.*
           if-no-files-found: error
 
   publish:
